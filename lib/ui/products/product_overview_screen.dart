@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../cart/cart_screen.dart';
+import '../shared/app_drawer.dart';
 
 import 'products_grid.dart';
 
@@ -24,6 +26,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           buildShoppingCartIcon(),
         ],
       ),
+      drawer: const AppDrawer(),
       body: ProductsGrid(_showOnlyFavorites),
     );
   }
@@ -54,7 +57,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   Widget buildShoppingCartIcon() {
     return IconButton(
         onPressed: () {
-          print('go to cart screen');
+          Navigator.of(context).pushNamed(CartScreen.routeName);
         },
         icon: const Icon(Icons.shopping_cart));
   }
