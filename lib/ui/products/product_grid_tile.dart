@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/product.dart';
-import './product_detail_screen.dart';
+import 'product_detail_screen.dart';
 
 class ProductGridTile extends StatelessWidget {
   const ProductGridTile(this.product, {super.key});
@@ -12,6 +12,7 @@ class ProductGridTile extends StatelessWidget {
     return ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: GridTile(
+          footer: buildGridFooterBar(context),
           child: GestureDetector(
             onTap: () {
               Navigator.of(context).pushNamed(
