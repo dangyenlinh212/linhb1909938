@@ -1,6 +1,7 @@
 import '../../models/product.dart';
+import 'package:flutter/foundation.dart';
 
-class ProductManager {
+class ProductsManager with ChangeNotifier {
   final List<Product> _items = [
     Product(
       id: 'p1',
@@ -37,6 +38,7 @@ class ProductManager {
       isFavorite: true,
     ),
   ];
+
   int get itemCount {
     return _items.length;
   }
@@ -46,10 +48,38 @@ class ProductManager {
   }
 
   List<Product> get favoriteItems {
-    return _items.where((item) => item.isFavorite).toList();
+    return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
   Product findById(String id) {
-    return _items.firstWhere((prod) => prod.id == id);
+    return _items.firstWhere((Product) => Product.id == id);
+  }
+
+  void addProduct(Product product) {
+    _items.add(
+      product.copyWith(
+        id: 'p${DateTime.now().toIso8601String()}',
+      ),
+    );
+    notifyListeners();
+  }
+
+  void updateProduct(Product product) {
+    final index = _items.indexWhere((item) => item.id == product.id);
+    if (index >= 0) {
+      _items[index] = product;
+      notifyListeners();
+    }
+  }
+
+  void toggleFavoriteStatus(Product product) {
+    final saveStatus = product.isFavorite;
+    product.isFavorite = !saveStatus;
+  }
+
+  void deleteProduct(String id) {
+    final index = _items.indexWhere((item) => item.id == id);
+    _items.removeAt(index);
+    notifyListeners();
   }
 }

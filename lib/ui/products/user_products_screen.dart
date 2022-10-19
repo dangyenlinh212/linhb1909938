@@ -10,7 +10,7 @@ class UserProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productsManager = ProductManager();
+    final productsManager = ProductsManager();
 
     return Scaffold(
       appBar: AppBar(
@@ -27,12 +27,12 @@ class UserProductsScreen extends StatelessWidget {
     );
   }
 
-  Widget buildUserProductListView(ProductManager productManager) {
+  Widget buildUserProductListView(ProductsManager productManager) {
     return ListView.builder(
         itemCount: productManager.itemCount,
         itemBuilder: (ctx, i) => Column(
               children: [
-                UserProductsListTile(productManager.items[i]),
+                UserProductListTile(productManager.items[i]),
                 const Divider()
               ],
             ));
