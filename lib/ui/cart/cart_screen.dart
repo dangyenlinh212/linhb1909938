@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:myshop/ui/cart/cart_item_card.dart';
-import 'package:myshop/ui/cart/cart_manager.dart';
-
+import 'package:myshop/ui/orders/order_manager.dart';
 import 'package:provider/provider.dart';
+
+import 'cart_item_card.dart';
+import 'cart_manager.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '/cart';
@@ -19,10 +20,12 @@ class CartScreen extends StatelessWidget {
       body: Column(
         children: <Widget>[
           buildCartSummary(cart, context),
-          const SizedBox(height: 10),
+          const SizedBox(
+            height: 10,
+          ),
           Expanded(
             child: buildCartDetails(cart),
-          )
+          ),
         ],
       ),
     );
@@ -32,9 +35,9 @@ class CartScreen extends StatelessWidget {
     return ListView(
       children: cart.productEntries
           .map(
-            (entry) => CartItemCard(
-              productId: entry.key,
-              cardItem: entry.value,
+            (Entry) => CartItemCard(
+              productId: Entry.key,
+              cardItem: Entry.value,
             ),
           )
           .toList(),
@@ -64,9 +67,15 @@ class CartScreen extends StatelessWidget {
               backgroundColor: Theme.of(context).primaryColor,
             ),
             TextButton(
-              onPressed: () {
-                print('An order has been added');
-              },
+              onPressed: cart.totalAmount <= 0
+                  ? null
+                  : () {
+                      context.read<OrdersManager>().addOrder(
+                            cart.products,
+                            cart.totalAmount,
+                          );
+                      cart.clear();
+                    },
               style: TextButton.styleFrom(
                 textStyle: TextStyle(color: Theme.of(context).primaryColor),
               ),
