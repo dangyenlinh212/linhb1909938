@@ -5,7 +5,7 @@ import '../shared/app_drawer.dart';
 import 'products_grid.dart';
 import '../cart/cart_manager.dart';
 import 'top_right_badge.dart';
-
+import 'products_manager.dart';
 import 'package:provider/provider.dart';
 
 enum FilterOptions { favorite, all }
@@ -18,7 +18,14 @@ class ProductsOverviewScreen extends StatefulWidget {
 }
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
-  var _showOnlyFavorites = false;
+  final _showOnlyFavorites = ValueNotifier<bool>(false);
+  late Future<void> _fetchProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts = context.read<ProductsManager>().fetchProducts();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,13 +38,34 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: ProductsGrid(_showOnlyFavorites),
+      body: FutureBuilder(
+        future: _fetchProducts,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.done) {
+            return ValueListenableBuilder<bool>(
+                valueListenable: _showOnlyFavorites,
+                builder: (context, onlyFavorites, child) {
+                  return ProductsGrid(onlyFavorites);
+                });
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        },
+      ),
     );
   }
 
   Widget buildProductFilterMenu() {
     return PopupMenuButton(
-      itemBuilder: (ctx) => [
+      onSelected: (FilterOptions selectedValue) {
+        if (selectedValue == FilterOptions.favorite) {
+          _showOnlyFavorites.value = true;
+        } else {
+          _showOnlyFavorites.value = false;
+        }
+      },
+      itemBuilder: (BuildContext ctx) => [
         const PopupMenuItem(
           child: Text('Only Favorite'),
           value: FilterOptions.favorite,
@@ -47,13 +75,6 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
           value: FilterOptions.all,
         )
       ],
-      onSelected: (FilterOptions selectedValue) {
-        setState(() {
-          if (selectedValue == FilterOptions.favorite)
-            _showOnlyFavorites = true;
-          if (selectedValue == FilterOptions.all) _showOnlyFavorites = false;
-        });
-      },
       icon: const Icon(Icons.more_vert),
     );
   }
